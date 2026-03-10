@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAG Widget Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero-card">
+        <p class="eyebrow">Widget Sandbox</p>
+        <h1>Try the embedded RAG assistant on a realistic landing page.</h1>
+        <p class="lead">
+          This page loads the production-style widget bundle from <code>localhost:8080/widget.js</code>
+          and talks to the API on <code>localhost:8000</code>.
+        </p>
+        <div class="pill-row">
+          <span>Site origin: <strong>http://localhost:3000</strong></span>
+          <span>API: <strong>http://localhost:8000</strong></span>
+          <span>Bundle: <strong>http://localhost:8080/widget.js</strong></span>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <article class="story-card">
+          <p class="eyebrow">Suggested flow</p>
+          <h2>How to test it</h2>
+          <ol>
+            <li>Open the admin panel at <code>localhost:4173</code> and upload a document.</li>
+            <li>Wait until the document status turns <strong>ready</strong>.</li>
+            <li>Come back here and open the widget in the bottom-right corner.</li>
+            <li>Ask a question that should be answered from that uploaded document.</li>
+          </ol>
+        </article>
+
+        <article class="story-card accent-card">
+          <p class="eyebrow">Grounding policy</p>
+          <h2>The widget should refuse weak answers.</h2>
+          <p>
+            If the document evidence is missing or weak, the assistant is expected to answer that it does not know based on the uploaded documents.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <script>
+      const widgetScript = document.createElement('script');
+      widgetScript.src = `http://localhost:8080/widget.js?v=${Date.now()}`;
+      widgetScript.onload = () => {
+        if (!window.RagWidget) {
+          console.error('RagWidget global was not initialized.');
+          return;
+        }
+
+        window.RagWidget.init({
+          apiBaseUrl: 'http://localhost:8000',
+          siteKey: 'local-demo-key',
+          title: 'Ask the knowledge base'
+        });
+      };
+      widgetScript.onerror = () => {
+        console.error('Failed to load widget bundle from localhost:8080.');
+      };
+      document.body.appendChild(widgetScript);
+    </script>
+  </body>
+</html>

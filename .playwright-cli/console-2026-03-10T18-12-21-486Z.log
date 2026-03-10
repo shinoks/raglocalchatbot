@@ -1,0 +1,5 @@
+[     698ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost:8000/api/chat/sessions:0
+[     720ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
+[   75578ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost:8000/api/chat/sessions:0
+[  264138ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost:8000/api/chat/sessions:0
+[  275403ms] [ERROR] Failed to load resource: the server responded with a status of 403 (Forbidden) @ http://localhost:8000/api/chat/sessions:0

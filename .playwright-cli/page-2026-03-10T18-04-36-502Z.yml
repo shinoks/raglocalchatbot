@@ -1,0 +1,39 @@
+- main [ref=e2]:
+  - generic [ref=e3]:
+    - paragraph [ref=e4]: Widget Sandbox
+    - heading "Try the embedded RAG assistant on a realistic landing page." [level=1] [ref=e5]
+    - paragraph [ref=e6]:
+      - text: This page loads the production-style widget bundle from
+      - code [ref=e7]: localhost:8080/widget.js
+      - text: and talks to the API on
+      - code [ref=e8]: localhost:8000
+      - text: .
+    - generic [ref=e9]:
+      - generic [ref=e10]:
+        - text: "Site origin:"
+        - strong [ref=e11]: http://localhost:3000
+      - generic [ref=e12]:
+        - text: "API:"
+        - strong [ref=e13]: http://localhost:8000
+      - generic [ref=e14]:
+        - text: "Bundle:"
+        - strong [ref=e15]: http://localhost:8080/widget.js
+  - generic [ref=e16]:
+    - article [ref=e17]:
+      - paragraph [ref=e18]: Suggested flow
+      - heading "How to test it" [level=2] [ref=e19]
+      - list [ref=e20]:
+        - listitem [ref=e21]:
+          - text: Open the admin panel at
+          - code [ref=e22]: localhost:4173
+          - text: and upload a document.
+        - listitem [ref=e23]:
+          - text: Wait until the document status turns
+          - strong [ref=e24]: ready
+          - text: .
+        - listitem [ref=e25]: Come back here and open the widget in the bottom-right corner.
+        - listitem [ref=e26]: Ask a question that should be answered from that uploaded document.
+    - article [ref=e27]:
+      - paragraph [ref=e28]: Grounding policy
+      - heading "The widget should refuse weak answers." [level=2] [ref=e29]
+      - paragraph [ref=e30]: If the document evidence is missing or weak, the assistant is expected to answer that it does not know based on the uploaded documents.

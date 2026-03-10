@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.vite/
+coverage/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.local
+storage/uploads/*
+!storage/uploads/.gitkeep
+services/api/alembic/versions/__pycache__/

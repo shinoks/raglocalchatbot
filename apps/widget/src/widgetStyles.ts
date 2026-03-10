@@ -1,0 +1,217 @@
+export const widgetStyles = `
+.rag-widget-shell {
+  --widget-ink: #12212a;
+  --widget-muted: #60717a;
+  --widget-panel: #fbfaf4;
+  --widget-line: rgba(18, 33, 42, 0.12);
+  --widget-accent: #0b7a75;
+  --widget-accent-strong: #084f4c;
+  --widget-shadow: 0 24px 48px rgba(18, 33, 42, 0.18);
+  font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+}
+
+.rag-widget-shell {
+  position: relative;
+  z-index: 999999;
+}
+
+.rag-widget-shell.floating {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+}
+
+.rag-widget-panel {
+  width: min(380px, calc(100vw - 1.5rem));
+  border-radius: 28px;
+  border: 1px solid var(--widget-line);
+  background:
+    radial-gradient(circle at top right, rgba(11, 122, 117, 0.14), transparent 28%),
+    var(--widget-panel);
+  box-shadow: var(--widget-shadow);
+  overflow: hidden;
+}
+
+.rag-widget-shell.inline .rag-widget-panel {
+  width: min(760px, calc(100vw - 2rem));
+}
+
+.rag-widget-launcher,
+.rag-widget-form button,
+.rag-widget-close {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.rag-widget-launcher {
+  min-height: 56px;
+  padding: 0 1.2rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--widget-accent) 0%, var(--widget-accent-strong) 100%);
+  color: #fff;
+  box-shadow: 0 16px 30px rgba(11, 122, 117, 0.28);
+}
+
+.rag-widget-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem 1rem 0.8rem;
+}
+
+.rag-widget-header h2 {
+  margin: 0.2rem 0 0;
+  font-size: 1.25rem;
+  color: var(--widget-ink);
+}
+
+.rag-widget-kicker {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.74rem;
+  color: var(--widget-accent-strong);
+}
+
+.rag-widget-close {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(18, 33, 42, 0.08);
+  color: var(--widget-ink);
+}
+
+.rag-widget-messages {
+  max-height: 420px;
+  overflow-y: auto;
+  padding: 0 1rem 1rem;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.rag-widget-empty {
+  padding: 1rem;
+  border-radius: 18px;
+  background: rgba(11, 122, 117, 0.08);
+  color: var(--widget-muted);
+}
+
+.rag-message {
+  padding: 0.85rem 0.95rem;
+  border-radius: 22px;
+  border: 1px solid var(--widget-line);
+}
+
+.rag-user {
+  background: rgba(18, 33, 42, 0.08);
+  color: var(--widget-ink);
+}
+
+.rag-assistant {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--widget-ink);
+}
+
+.rag-message p {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.rag-message-tag {
+  display: inline-flex;
+  margin-top: 0.6rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(180, 83, 9, 0.12);
+  color: #92400e;
+  font-size: 0.8rem;
+}
+
+.rag-citations {
+  margin-top: 0.75rem;
+}
+
+.rag-citations summary {
+  cursor: pointer;
+  color: var(--widget-accent-strong);
+  font-weight: 600;
+}
+
+.rag-citation-list {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+}
+
+.rag-citation-card {
+  padding: 0.75rem;
+  border-radius: 16px;
+  background: rgba(241, 248, 247, 0.95);
+  border: 1px solid var(--widget-line);
+}
+
+.rag-citation-card strong,
+.rag-citation-card span {
+  display: block;
+}
+
+.rag-citation-card span {
+  margin-top: 0.15rem;
+  color: var(--widget-muted);
+  font-size: 0.88rem;
+}
+
+.rag-citation-card p {
+  margin: 0.45rem 0 0;
+  color: var(--widget-ink);
+}
+
+.rag-widget-error {
+  margin: 0;
+  padding: 0 1rem 0.75rem;
+  color: #b45309;
+}
+
+.rag-widget-form {
+  display: grid;
+  gap: 0.8rem;
+  padding: 0 1rem 1rem;
+}
+
+.rag-widget-form textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 90px;
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  border: 1px solid var(--widget-line);
+  font: inherit;
+  color: var(--widget-ink);
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.rag-widget-form button {
+  min-height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--widget-accent) 0%, var(--widget-accent-strong) 100%);
+  color: #fff;
+}
+
+.rag-widget-form button:disabled {
+  opacity: 0.75;
+}
+
+@media (max-width: 640px) {
+  .rag-widget-shell.floating {
+    right: 12px;
+    left: 12px;
+    bottom: 12px;
+  }
+
+  .rag-widget-panel {
+    width: 100%;
+  }
+}
+`;

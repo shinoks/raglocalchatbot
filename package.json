@@ -1,0 +1,15 @@
+{
+  "name": "rag-chatbot-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/admin",
+    "apps/widget"
+  ],
+  "scripts": {
+    "dev:admin": "npm --workspace @rag/admin run dev",
+    "dev:widget": "npm --workspace @rag/widget run dev",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces"
+  }
+}

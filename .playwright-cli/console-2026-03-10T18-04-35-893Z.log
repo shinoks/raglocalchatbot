@@ -1,0 +1,7 @@
+[     425ms] Uncaught ReferenceError: process is not defined
+    at aE (http://localhost:8080/widget.js:49:1738)
+    at <anonymous> (http://localhost:8080/widget.js:49:1825)
+    at <anonymous> (http://localhost:8080/widget.js:538:643)
+[     431ms] TypeError: Cannot read properties of undefined (reading 'init')
+    at http://localhost:3000/:52:24
+[     478ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3000/favicon.ico:0
