@@ -1,4 +1,4 @@
-import { Citation, DocumentItem } from "../lib/api";
+﻿import { Citation, DocumentItem } from "../lib/api";
 
 type DocumentTableProps = {
   busyDocumentId: string | null;
@@ -12,9 +12,22 @@ type DocumentTableProps = {
 
 function formatDate(value: string | null) {
   if (!value) {
-    return "Never";
+    return "Nigdy";
   }
   return new Date(value).toLocaleString();
+}
+
+function statusLabel(status: DocumentItem["status"]) {
+  switch (status) {
+    case "processing":
+      return "przetwarzanie";
+    case "ready":
+      return "gotowy";
+    case "failed":
+      return "błąd";
+    default:
+      return status;
+  }
 }
 
 export function DocumentTable({
@@ -30,21 +43,21 @@ export function DocumentTable({
     <section className="panel table-panel">
       <div className="panel-heading">
         <div>
-          <p className="eyebrow">Knowledge Base</p>
-          <h2>Uploaded documents</h2>
+          <p className="eyebrow">Baza Wiedzy</p>
+          <h2>Przesłane dokumenty</h2>
         </div>
-        <span className="badge">{documents.length} total</span>
+        <span className="badge">Łącznie: {documents.length}</span>
       </div>
       <div className="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Name</th>
+              <th>Nazwa</th>
               <th>Status</th>
               <th>Format</th>
-              <th>Chunks</th>
-              <th>Indexed</th>
-              <th>Actions</th>
+              <th>Chunki</th>
+              <th>Zindeksowano</th>
+              <th>Akcje</th>
             </tr>
           </thead>
           <tbody>
@@ -55,11 +68,11 @@ export function DocumentTable({
                 <tr key={document.id}>
                   <td>
                     <strong>{document.filename}</strong>
-                    <p className="table-subtext">Uploaded {formatDate(document.uploaded_at)}</p>
+                    <p className="table-subtext">Przesłano {formatDate(document.uploaded_at)}</p>
                     {document.error_message ? <p className="form-error">{document.error_message}</p> : null}
                   </td>
                   <td>
-                    <span className={`status-pill status-${document.status}`}>{document.status}</span>
+                    <span className={`status-pill status-${document.status}`}>{statusLabel(document.status)}</span>
                   </td>
                   <td>{document.format.toUpperCase()}</td>
                   <td>{document.chunk_count}</td>
@@ -67,26 +80,26 @@ export function DocumentTable({
                   <td>
                     <div className="table-actions">
                       <button disabled={busy} onClick={() => onPreview(document.id)} type="button">
-                        {isCitationOpen ? "Refresh citations" : "View citations"}
+                        {isCitationOpen ? "Odśwież cytowania" : "Pokaż cytowania"}
                       </button>
                       <button disabled={busy} onClick={() => onReindex(document.id)} type="button">
-                        Reindex
+                        Indeksuj ponownie
                       </button>
                       <button className="danger" disabled={busy} onClick={() => onDelete(document.id)} type="button">
-                        Delete
+                        Usuń
                       </button>
                     </div>
                     {isCitationOpen ? (
                       <div className="citation-drawer">
                         {citations.length === 0 ? (
-                          <p className="muted small">No citations available yet.</p>
+                          <p className="muted small">Brak dostępnych cytowań.</p>
                         ) : (
                           citations.map((citation, index) => (
                             <article className="citation-card" key={`${citation.document_id}-${index}`}>
                               <header>
                                 <strong>{citation.filename}</strong>
                                 <span>
-                                  {citation.page ? `Page ${citation.page}` : citation.section ?? "Document excerpt"}
+                                  {citation.page ? `Strona ${citation.page}` : citation.section ?? "Fragment dokumentu"}
                                 </span>
                               </header>
                               <p>{citation.excerpt}</p>

@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from "react";
+﻿import { ChangeEvent, useState } from "react";
 
 type UploadFormProps = {
   busy: boolean;
@@ -16,31 +16,31 @@ export function UploadForm({ busy, onUpload }: UploadFormProps) {
 
   async function handleUpload() {
     if (!selectedFile) {
-      setMessage("Choose a PDF, DOCX, DOC, or TXT file first.");
+      setMessage("Najpierw wybierz plik PDF, DOCX, DOC lub TXT.");
       return;
     }
 
     await onUpload(selectedFile);
     setSelectedFile(null);
-    setMessage("Upload queued for ingestion.");
+    setMessage("Przesyłanie zostało dodane do kolejki przetwarzania.");
   }
 
   return (
     <section className="panel upload-panel">
       <div>
-        <p className="eyebrow">Ingestion</p>
-        <h2>Push new source material into the RAG index.</h2>
+        <p className="eyebrow">Przetwarzanie</p>
+        <h2>Dodaj nowe materiały źródłowe do indeksu RAG.</h2>
       </div>
       <div className="upload-controls">
         <label className="file-input">
           <input accept=".pdf,.docx,.doc,.txt" onChange={handleChange} type="file" />
-          <span>{selectedFile?.name ?? "Choose document"}</span>
+          <span>{selectedFile?.name ?? "Wybierz dokument"}</span>
         </label>
         <button disabled={busy} onClick={handleUpload} type="button">
-          {busy ? "Uploading..." : "Upload and index"}
+          {busy ? "Przesyłanie..." : "Prześlij i zindeksuj"}
         </button>
       </div>
-      <p className="muted small">Max size is 25 MB. Image-only PDFs are rejected because OCR is out of scope.</p>
+      <p className="muted small">Maksymalny rozmiar to 25 MB. PDF-y zawierające tylko obrazy są odrzucane, bo OCR nie jest obsługiwany.</p>
       {message ? <p className="inline-note">{message}</p> : null}
     </section>
   );

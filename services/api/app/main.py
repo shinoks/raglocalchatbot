@@ -1,4 +1,6 @@
-from contextlib import asynccontextmanager
+﻿from contextlib import asynccontextmanager
+import logging
+import time
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,8 +13,33 @@ from app.api.routes.health import router as health_router
 from app.core.config import get_settings
 from app.db.session import SessionLocal
 from app.services.admin import ensure_admin_user
+from app.services.ollama import OllamaService
 
 settings = get_settings()
+logger = logging.getLogger("uvicorn.error")
+
+
+def preload_ollama_models() -> None:
+    if not settings.ollama_preload_models_on_startup:
+        return
+
+    service = OllamaService()
+    attempts = 12
+    for attempt in range(1, attempts + 1):
+        try:
+            service.preload_embedding_model()
+            service.preload_chat_model()
+            logger.info(
+                "Preloaded Ollama models: chat=%s embed=%s",
+                settings.ollama_chat_model,
+                settings.ollama_embedding_model,
+            )
+            return
+        except Exception as exc:
+            if attempt == attempts:
+                logger.warning("Ollama preload failed after %s attempts: %s", attempts, exc)
+                return
+            time.sleep(1)
 
 
 @asynccontextmanager
@@ -23,6 +50,7 @@ async def lifespan(_: FastAPI):
             ensure_admin_user(session)
         except Exception:
             session.rollback()
+    preload_ollama_models()
     yield
 
 

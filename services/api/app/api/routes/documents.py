@@ -38,7 +38,7 @@ async def upload_document(
             storage.delete(stored.path)
         except FileNotFoundError:
             pass
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Document already exists.")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Dokument już istnieje.")
 
     document = Document(
         filename=stored.original_filename,
@@ -69,12 +69,12 @@ async def upload_document(
         db.commit()
     except Exception as exc:
         job.status = "failed"
-        job.error_message = f"Queue enqueue failed: {exc}"
+        job.error_message = f"Nie udało się dodać zadania do kolejki: {exc}"
         document.status = "failed"
         document.error_message = job.error_message
         db.add_all([job, document])
         db.commit()
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Queue is unavailable.") from exc
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Kolejka jest niedostępna.") from exc
 
     return document
 
@@ -87,7 +87,7 @@ def reindex_document(
 ) -> IngestionJobResponse:
     document = db.get(Document, document_id)
     if document is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Nie znaleziono dokumentu.")
 
     document.status = "processing"
     document.error_message = None
@@ -106,12 +106,12 @@ def reindex_document(
         )
     except Exception as exc:
         job.status = "failed"
-        job.error_message = f"Queue enqueue failed: {exc}"
+        job.error_message = f"Nie udało się dodać zadania do kolejki: {exc}"
         document.status = "failed"
         document.error_message = job.error_message
         db.add_all([job, document])
         db.commit()
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Queue is unavailable.") from exc
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Kolejka jest niedostępna.") from exc
 
     job.queue_job_id = queue_job.id
     db.add(job)
@@ -128,7 +128,7 @@ def delete_document(
 ) -> None:
     document = db.get(Document, document_id)
     if document is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Nie znaleziono dokumentu.")
 
     storage_path = document.storage_path
     db.delete(document)
@@ -148,7 +148,7 @@ def get_document_citations(
 ) -> list[CitationResponse]:
     document = db.get(Document, document_id)
     if document is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Nie znaleziono dokumentu.")
 
     chunks = db.scalars(
         select(DocumentChunk)
@@ -176,5 +176,6 @@ def get_job(
 ) -> IngestionJobResponse:
     job = db.get(IngestionJob, job_id)
     if job is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Nie znaleziono zadania.")
     return job
+

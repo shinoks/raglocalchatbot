@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+﻿from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
@@ -26,10 +26,18 @@ def health(db: Session = Depends(get_db)) -> HealthResponse:
     except Exception as exc:
         redis = HealthComponent(ok=False, detail=str(exc))
 
+    service = OllamaService()
+    ollama_errors: list[str] = []
     try:
-        OllamaService().healthcheck()
+        service.healthcheck_chat()
     except Exception as exc:
-        ollama = HealthComponent(ok=False, detail=str(exc))
+        ollama_errors.append(f"chat: {exc}")
+    try:
+        service.healthcheck_embedding()
+    except Exception as exc:
+        ollama_errors.append(f"embed: {exc}")
+    if ollama_errors:
+        ollama = HealthComponent(ok=False, detail="; ".join(ollama_errors))
 
     return HealthResponse(
         api=HealthComponent(ok=True),

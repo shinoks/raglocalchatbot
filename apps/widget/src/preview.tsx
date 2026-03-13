@@ -1,8 +1,8 @@
-import widget from "./embed";
+﻿import widget from "./embed";
 
 const previewTarget = document.getElementById("widget-preview");
 if (!previewTarget) {
-  throw new Error("Widget preview target was not found.");
+  throw new Error("Nie znaleziono elementu podglądu widżetu.");
 }
 
 document.body.style.margin = "0";
@@ -17,5 +17,5 @@ widget.init({
   inline: true,
   siteKey: import.meta.env.VITE_SITE_KEY ?? "local-demo-key",
   target: previewTarget,
-  title: "RAG Widget Preview",
+  title: "Podgląd widżetu RAG",
 });

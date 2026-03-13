@@ -1,4 +1,4 @@
-services:
+﻿services:
   postgres:
     image: pgvector/pgvector:pg16
     environment:
@@ -16,9 +16,15 @@ services:
       - "6379:6379"
 
   ollama:
-    image: ollama/ollama:0.6.0
+    image: ollama/ollama:latest
+    gpus: all
     ports:
       - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+
+  ollama-embed:
+    image: ollama/ollama:latest
     volumes:
       - ollama:/root/.ollama
 
@@ -32,6 +38,8 @@ services:
       - postgres
       - redis
       - ollama
+      - ollama-embed
+    command: ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
     ports:
       - "8000:8000"
     volumes:
@@ -48,6 +56,8 @@ services:
       - postgres
       - redis
       - ollama
+      - ollama-embed
+      - api
     volumes:
       - ./storage/uploads:/data/uploads
 
@@ -82,3 +92,6 @@ services:
 volumes:
   pgdata:
   ollama:
+
+
+

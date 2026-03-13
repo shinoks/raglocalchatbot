@@ -25,7 +25,7 @@ class StorageService:
         original_name = upload.filename or "document"
         suffix = Path(original_name).suffix.lower()
         if suffix not in {".pdf", ".docx", ".doc", ".txt"}:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported file type.")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Nieobsługiwany typ pliku.")
 
         filename = f"{uuid.uuid4()}{suffix}"
         destination = self.upload_dir / filename
@@ -43,7 +43,7 @@ class StorageService:
                     destination.unlink(missing_ok=True)
                     raise HTTPException(
                         status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
-                        detail="File exceeds maximum upload size.",
+                        detail="Plik przekracza maksymalny dozwolony rozmiar.",
                     )
                 digest.update(chunk)
                 handle.write(chunk)
@@ -59,3 +59,4 @@ class StorageService:
 
     def delete(self, path: str | Path) -> None:
         os.unlink(path)
+

@@ -12,17 +12,9 @@ settings = get_settings()
 
 def ensure_admin_user(session: Session) -> AdminUser:
     admin = session.scalar(select(AdminUser).where(AdminUser.email == settings.admin_email))
-    password_hash = hash_password(settings.admin_password)
 
     if admin is None:
-        admin = AdminUser(email=settings.admin_email, password_hash=password_hash)
-        session.add(admin)
-        session.commit()
-        session.refresh(admin)
-        return admin
-
-    if not verify_password(settings.admin_password, admin.password_hash):
-        admin.password_hash = password_hash
+        admin = AdminUser(email=settings.admin_email, password_hash=hash_password(settings.admin_password))
         session.add(admin)
         session.commit()
         session.refresh(admin)

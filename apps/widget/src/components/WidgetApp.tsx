@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+﻿import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 type Citation = {
   document_id: string;
@@ -68,7 +68,7 @@ async function createSession(apiBaseUrl: string, siteKey: string) {
 
   const payload = await response.json();
   if (!response.ok) {
-    throw new ApiError(response.status, payload?.detail ?? "Could not create chat session.");
+    throw new ApiError(response.status, payload?.detail ?? "Nie udało się utworzyć sesji czatu.");
   }
 
   return payload.session_id as string;
@@ -86,7 +86,7 @@ async function sendMessage(apiBaseUrl: string, siteKey: string, sessionId: strin
 
   const payload = await response.json();
   if (!response.ok) {
-    throw new ApiError(response.status, payload?.detail ?? "Chat request failed.");
+    throw new ApiError(response.status, payload?.detail ?? "Wysłanie wiadomości nie powiodło się.");
   }
 
   return payload as {
@@ -97,7 +97,7 @@ async function sendMessage(apiBaseUrl: string, siteKey: string, sessionId: strin
   };
 }
 
-export function WidgetApp({ apiBaseUrl, inline = false, siteKey, title = "Ask the docs" }: WidgetAppProps) {
+export function WidgetApp({ apiBaseUrl, inline = false, siteKey, title = "Zapytaj dokumenty" }: WidgetAppProps) {
   const initialState = useMemo(() => loadState(apiBaseUrl, siteKey), [apiBaseUrl, siteKey]);
   const [open, setOpen] = useState(inline);
   const [input, setInput] = useState("");
@@ -218,14 +218,14 @@ export function WidgetApp({ apiBaseUrl, inline = false, siteKey, title = "Ask th
       const result = await submitWithRecovery(ensuredSessionId, trimmed);
       animateAssistantMessage(assistantMessage.id, result.answer, result.citations, result.status);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "The assistant is unavailable right now.";
+      const message = err instanceof Error ? err.message : "Asystent jest teraz niedostępny.";
       setError(message);
       setMessages((current) =>
         current.map((entry) =>
           entry.id === assistantMessage.id
             ? {
                 ...entry,
-                content: "I cannot answer right now. Please try again in a moment.",
+                content: "Nie mogę teraz odpowiedzieć. Spróbuj ponownie za chwilę.",
                 citations: [],
                 status: "error",
               }
@@ -241,7 +241,7 @@ export function WidgetApp({ apiBaseUrl, inline = false, siteKey, title = "Ask th
     <div className={`rag-widget-shell ${inline ? "inline" : "floating"} ${open ? "is-open" : ""}`}>
       {!inline ? (
         <button className="rag-widget-launcher" onClick={() => setOpen((current) => !current)} type="button">
-          {open ? "Close" : title}
+          {open ? "Zamknij" : title}
         </button>
       ) : null}
 
@@ -249,12 +249,12 @@ export function WidgetApp({ apiBaseUrl, inline = false, siteKey, title = "Ask th
         <section className="rag-widget-panel">
           <header className="rag-widget-header">
             <div>
-              <p className="rag-widget-kicker">Grounded answers only</p>
+              <p className="rag-widget-kicker">Wyłącznie odpowiedzi oparte na źródłach</p>
               <h2>{title}</h2>
             </div>
             {!inline ? (
               <button className="rag-widget-close" onClick={() => setOpen(false)} type="button">
-                �
+                ×
               </button>
             ) : null}
           </header>
@@ -262,25 +262,25 @@ export function WidgetApp({ apiBaseUrl, inline = false, siteKey, title = "Ask th
           <div className="rag-widget-messages">
             {messages.length === 0 ? (
               <div className="rag-widget-empty">
-                Ask a question about the uploaded documents. If the evidence is weak, the bot will say it does not know.
+                Zadaj pytanie dotyczące przesłanych dokumentów. Jeśli dowody będą zbyt słabe, bot odpowie, że nie wie.
               </div>
             ) : null}
 
             {messages.map((message) => (
               <article className={`rag-message rag-${message.role}`} key={message.id}>
-                <p>{message.content || (message.status === "pending" ? "Thinking�" : "")}</p>
+                <p>{message.content || (message.status === "pending" ? "Myślę…" : "")}</p>
                 {message.role === "assistant" && message.status === "insufficient_evidence" ? (
-                  <span className="rag-message-tag">Insufficient evidence</span>
+                  <span className="rag-message-tag">Za mało danych źródłowych</span>
                 ) : null}
                 {message.citations.length > 0 ? (
                   <details className="rag-citations">
-                    <summary>View citations</summary>
+                    <summary>Pokaż cytowania</summary>
                     <div className="rag-citation-list">
                       {message.citations.map((citation, index) => (
                         <article className="rag-citation-card" key={`${message.id}-${index}`}>
                           <strong>{citation.filename}</strong>
                           <span>
-                            {citation.page ? `Page ${citation.page}` : citation.section ?? "Document excerpt"}
+                            {citation.page ? `Strona ${citation.page}` : citation.section ?? "Fragment dokumentu"}
                           </span>
                           <p>{citation.excerpt}</p>
                         </article>
@@ -298,12 +298,12 @@ export function WidgetApp({ apiBaseUrl, inline = false, siteKey, title = "Ask th
           <form className="rag-widget-form" onSubmit={handleSubmit}>
             <textarea
               onChange={(event) => setInput(event.target.value)}
-              placeholder="Ask something that should be answered from the uploaded files..."
+              placeholder="Zadaj pytanie, na które odpowiedź powinna wynikać z przesłanych plików..."
               rows={3}
               value={input}
             />
             <button disabled={pending || !input.trim()} type="submit">
-              {pending ? "Working..." : "Send"}
+              {pending ? "Przetwarzanie..." : "Wyślij"}
             </button>
           </form>
         </section>

@@ -11,8 +11,11 @@ from pypdf import PdfReader
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.models.entities import Document, DocumentChunk, DocumentStatus, IngestionJob, JobStatus
 from app.services.ollama import OllamaService
+
+settings = get_settings()
 
 
 class IngestionError(RuntimeError):
@@ -50,8 +53,8 @@ def normalize_text(text: str) -> str:
 
 def chunk_segments(
     segments: list[ExtractedSegment],
-    chunk_size_words: int = 800,
-    overlap_words: int = 120,
+    chunk_size_words: int = settings.chunk_size_words,
+    overlap_words: int = settings.chunk_overlap_words,
 ) -> list[ChunkPayload]:
     payloads: list[ChunkPayload] = []
     step = max(1, chunk_size_words - overlap_words)
@@ -85,7 +88,7 @@ class IngestionService:
         document = db.get(Document, document_id)
         job = db.get(IngestionJob, job_id)
         if document is None or job is None:
-            raise IngestionError("Document or ingestion job was not found.")
+            raise IngestionError("Nie znaleziono dokumentu albo zadania przetwarzania.")
 
         job.status = JobStatus.processing.value
         job.started_at = utcnow()
@@ -98,7 +101,7 @@ class IngestionService:
             chunks = self._build_chunks(Path(document.storage_path), document.format)
             embeddings = self.ollama.embed_texts([chunk.content for chunk in chunks])
             if len(embeddings) != len(chunks):
-                raise IngestionError("Embedding response count did not match chunk count.")
+                raise IngestionError("Liczba embeddingów nie zgadza się z liczbą chunków.")
 
             db.execute(delete(DocumentChunk).where(DocumentChunk.document_id == document.id))
             for index, payload in enumerate(chunks):
@@ -142,10 +145,10 @@ class IngestionService:
     def _build_chunks(self, path: Path, file_format: str) -> list[ChunkPayload]:
         segments = self._extract_segments(path, file_format)
         if not segments:
-            raise IngestionError("No text content could be extracted from the document.")
+            raise IngestionError("Nie udało się wyodrębnić tekstu z dokumentu.")
         chunks = chunk_segments(segments)
         if not chunks:
-            raise IngestionError("No chunks were produced from the document.")
+            raise IngestionError("Nie udało się utworzyć chunków z dokumentu.")
         return chunks
 
     def _extract_segments(self, path: Path, file_format: str) -> list[ExtractedSegment]:
@@ -158,7 +161,7 @@ class IngestionService:
             return self._extract_doc(path)
         if file_format == "txt":
             return self._extract_txt(path)
-        raise IngestionError(f"Unsupported file format: {file_format}")
+        raise IngestionError(f"Nieobsługiwany format pliku: {file_format}")
 
     def _extract_pdf(self, path: Path) -> list[ExtractedSegment]:
         reader = PdfReader(str(path))
@@ -168,7 +171,7 @@ class IngestionService:
             if text:
                 segments.append(ExtractedSegment(text=text, page_number=page_number))
         if not segments:
-            raise ScannedDocumentError("PDF appears to be scanned or image-only. OCR is not enabled in v1.")
+            raise ScannedDocumentError("PDF wygląda na skan albo dokument obrazkowy. OCR nie jest dostępny w wersji v1.")
         return segments
 
     def _extract_docx(self, path: Path) -> list[ExtractedSegment]:
@@ -197,7 +200,7 @@ class IngestionService:
 
         flush()
         if not segments:
-            raise IngestionError("DOCX document contained no extractable text.")
+            raise IngestionError("Dokument DOCX nie zawiera tekstu możliwego do odczytu.")
         return segments
 
     def _extract_doc(self, path: Path) -> list[ExtractedSegment]:
@@ -214,16 +217,17 @@ class IngestionService:
             try:
                 subprocess.run(command, check=True, capture_output=True, text=True)
             except subprocess.CalledProcessError as exc:
-                raise IngestionError(f"Failed to convert legacy DOC file: {exc.stderr or exc.stdout}") from exc
+                raise IngestionError(f"Nie udało się przekonwertować starszego pliku DOC: {exc.stderr or exc.stdout}") from exc
 
             converted_path = Path(temp_dir) / f"{path.stem}.docx"
             if not converted_path.exists():
-                raise IngestionError("Legacy DOC conversion did not produce a DOCX file.")
+                raise IngestionError("Konwersja starszego pliku DOC nie utworzyła pliku DOCX.")
             return self._extract_docx(converted_path)
 
     def _extract_txt(self, path: Path) -> list[ExtractedSegment]:
         content = path.read_text(encoding="utf-8", errors="ignore")
         normalized = normalize_text(content)
         if not normalized:
-            raise IngestionError("TXT document contained no extractable text.")
+            raise IngestionError("Plik TXT nie zawiera tekstu możliwego do odczytu.")
         return [ExtractedSegment(text=normalized)]
+

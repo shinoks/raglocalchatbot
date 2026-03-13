@@ -29,34 +29,35 @@ def require_admin(
     session_token: str | None = Cookie(default=None, alias=settings.admin_cookie_name),
 ) -> AdminUser:
     if not session_token:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Wymagane jest uwierzytelnienie.")
     admin_id = read_session_token(
         settings.session_secret,
         session_token,
         settings.admin_session_max_age_seconds,
     )
     if admin_id is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Nieprawidłowa sesja.")
 
     admin = db.scalar(select(AdminUser).where(AdminUser.id == admin_id))
     if admin is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid session.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Nieprawidłowa sesja.")
     return admin
 
 
 def require_widget_access(request: Request) -> str:
     site_key = request.headers.get("x-site-key")
     if site_key != settings.site_key:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid site key.")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Nieprawidłowy klucz witryny.")
 
     origin = request.headers.get("origin")
     if origin not in settings.allowed_widget_origins:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Origin is not allowed.")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Ten origin nie jest dozwolony.")
     return origin
 
 
 def enforce_public_rate_limit(request: Request) -> str:
     client_ip = get_client_ip(request)
     if not RateLimitService().allow(client_ip):
-        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Rate limit exceeded.")
+        raise HTTPException(status_code=status.HTTP_429_TOO_MANY_REQUESTS, detail="Przekroczono limit żądań.")
     return client_ip
+

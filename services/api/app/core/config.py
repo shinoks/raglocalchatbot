@@ -1,4 +1,4 @@
-import json
+﻿import json
 from functools import lru_cache
 from pathlib import Path
 
@@ -18,8 +18,13 @@ class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg://ragchat:ragchat@postgres:5432/ragchat"
     redis_url: str = "redis://redis:6379/0"
     ollama_base_url: str = "http://ollama:11434"
+    ollama_embedding_base_url: str | None = None
     ollama_chat_model: str = "llama3.2:1b"
     ollama_embedding_model: str = "nomic-embed-text"
+    ollama_chat_num_predict: int = 192
+    ollama_chat_keep_alive: str = "-1"
+    ollama_embedding_keep_alive: str = "30m"
+    ollama_preload_models_on_startup: bool = True
     ollama_request_timeout_seconds: float = 300.0
     embedding_dimension: int = 768
     admin_email: str = "admin@example.com"
@@ -31,7 +36,10 @@ class Settings(BaseSettings):
     max_upload_bytes: int = 25 * 1024 * 1024
     public_rate_limit_per_minute: int = 30
     rag_score_threshold: float = 0.35
-    rag_top_k: int = 6
+    rag_top_k: int = 3
+    rag_context_char_budget: int = 6000
+    chunk_size_words: int = 220
+    chunk_overlap_words: int = 40
     admin_cookie_name: str = "rag_admin_session"
     admin_session_max_age_seconds: int = 60 * 60 * 12
     admin_dev_origins: list[str] = Field(default_factory=lambda: ["http://localhost:4173"])
@@ -68,6 +76,14 @@ class Settings(BaseSettings):
         return cls._parse_origin_list(value, ["http://localhost:4173"])
 
     @property
+    def ollama_chat_base_url(self) -> str:
+        return self.ollama_base_url.rstrip("/")
+
+    @property
+    def ollama_effective_embedding_base_url(self) -> str:
+        return (self.ollama_embedding_base_url or self.ollama_base_url).rstrip("/")
+
+    @property
     def cors_origins(self) -> list[str]:
         return sorted(set(self.allowed_widget_origins + self.admin_dev_origins))
 
@@ -75,3 +91,4 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+

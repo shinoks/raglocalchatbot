@@ -1,4 +1,4 @@
-import { startTransition, useEffect, useMemo, useState } from "react";
+﻿import { startTransition, useEffect, useMemo, useState } from "react";
 
 import { DocumentTable } from "./components/DocumentTable";
 import { LoginForm } from "./components/LoginForm";
@@ -48,7 +48,7 @@ export default function App() {
           setAdmin(currentAdmin);
           await refreshDocuments();
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setAdmin(null);
         }
@@ -92,7 +92,7 @@ export default function App() {
       setAdmin(currentAdmin);
       await refreshDocuments();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Unable to sign in.");
+      setError(err instanceof ApiError ? err.message : "Nie udało się zalogować.");
     } finally {
       setAuthBusy(false);
     }
@@ -113,7 +113,7 @@ export default function App() {
       await uploadDocument(file);
       await refreshDocuments();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Upload failed.");
+      setError(err instanceof ApiError ? err.message : "Przesyłanie nie powiodło się.");
     } finally {
       setUploadBusy(false);
     }
@@ -126,7 +126,7 @@ export default function App() {
       await reindexDocument(documentId);
       await refreshDocuments();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Reindex failed.");
+      setError(err instanceof ApiError ? err.message : "Ponowne indeksowanie nie powiodło się.");
     } finally {
       setBusyDocumentId(null);
     }
@@ -141,7 +141,7 @@ export default function App() {
       setCitationDocumentId((current) => (current === documentId ? null : current));
       await refreshDocuments();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Delete failed.");
+      setError(err instanceof ApiError ? err.message : "Usuwanie nie powiodło się.");
     } finally {
       setBusyDocumentId(null);
     }
@@ -155,14 +155,14 @@ export default function App() {
       setCitations(nextCitations);
       setCitationDocumentId(documentId);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not load citations.");
+      setError(err instanceof ApiError ? err.message : "Nie udało się wczytać cytowań.");
     } finally {
       setBusyDocumentId(null);
     }
   }
 
   if (booting) {
-    return <main className="shell loading-state">Checking admin session�</main>;
+    return <main className="shell loading-state">Sprawdzanie sesji administratora…</main>;
   }
 
   if (!admin) {
@@ -177,14 +177,14 @@ export default function App() {
     <main className="shell">
       <header className="hero panel">
         <div>
-          <p className="eyebrow">Grounded RAG Control Room</p>
-          <h1>Keep the chatbot accurate by managing what it can retrieve.</h1>
+          <p className="eyebrow">Panel Sterowania RAG</p>
+          <h1>Dbaj o trafność chatbota, zarządzając tym, co może wyszukiwać.</h1>
           <p className="muted">
-            Logged in as <strong>{admin.email}</strong>. {processingCount} document(s) are currently indexing.
+            Zalogowano jako <strong>{admin.email}</strong>. Obecnie indeksuje się {processingCount} dokumentów.
           </p>
         </div>
         <button className="ghost" onClick={handleLogout} type="button">
-          Sign out
+          Wyloguj
         </button>
       </header>
 
@@ -193,19 +193,19 @@ export default function App() {
       <section className="dashboard-grid">
         <UploadForm busy={uploadBusy} onUpload={handleUpload} />
         <section className="panel stats-panel">
-          <p className="eyebrow">Health Snapshot</p>
+          <p className="eyebrow">Stan Systemu</p>
           <div className="stats-grid">
             <article>
               <strong>{documents.length}</strong>
-              <span>documents tracked</span>
+              <span>dokumentów w systemie</span>
             </article>
             <article>
               <strong>{documents.filter((document) => document.status === "ready").length}</strong>
-              <span>ready for retrieval</span>
+              <span>gotowych do wyszukiwania</span>
             </article>
             <article>
               <strong>{documents.filter((document) => document.status === "failed").length}</strong>
-              <span>need attention</span>
+              <span>wymaga uwagi</span>
             </article>
           </div>
         </section>

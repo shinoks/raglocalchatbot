@@ -17,7 +17,7 @@ settings = get_settings()
 def login(payload: AdminLoginRequest, response: Response, db: Session = Depends(get_db)) -> AdminUserResponse:
     admin = authenticate_admin(db, payload.email, payload.password)
     if admin is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Nieprawidłowe dane logowania.")
 
     token = build_session_token(settings.session_secret, str(admin.id))
     response.set_cookie(
@@ -41,3 +41,4 @@ def logout(response: Response) -> Response:
 @router.get("/me", response_model=AdminUserResponse)
 def me(current_admin: AdminUser = Depends(require_admin)) -> AdminUserResponse:
     return current_admin
+

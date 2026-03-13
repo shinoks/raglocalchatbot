@@ -1,4 +1,4 @@
-export type AdminUser = {
+﻿export type AdminUser = {
   id: string;
   email: string;
   created_at: string;
@@ -65,7 +65,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const text = await response.text();
   const data = text ? JSON.parse(text) : undefined;
   if (!response.ok) {
-    throw new ApiError(data?.detail ?? "Request failed.", response.status);
+    throw new ApiError(data?.detail ?? "Żądanie nie powiodło się.", response.status);
   }
 
   return data as T;

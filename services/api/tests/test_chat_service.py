@@ -1,5 +1,5 @@
-from app.services.chat import ChatService
 from app.models.entities import ChatAnswerStatus
+from app.services.chat import ChatService
 
 
 class StubRetrievalService:
@@ -26,7 +26,8 @@ def test_chat_service_returns_insufficient_evidence_without_hits():
 
     assert result.status == ChatAnswerStatus.insufficient_evidence.value
     assert result.citations == []
-    assert "uploaded documents" in result.answer
+    assert "przesłanych dokumentów" in result.answer
+    assert result.diagnostics.evidence_count == 0
 
 
 def test_chat_service_returns_citations_when_evidence_exists():
@@ -52,3 +53,6 @@ def test_chat_service_returns_citations_when_evidence_exists():
     assert result.status == "answered"
     assert len(result.citations) == 1
     assert result.citations[0].filename == "policy.pdf"
+    assert result.diagnostics.evidence_count == 1
+    assert result.diagnostics.ollama is not None
+

@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+﻿import { FormEvent, useState } from "react";
 
 type LoginFormProps = {
   disabled: boolean;
@@ -18,15 +18,15 @@ export function LoginForm({ disabled, error, onSubmit }: LoginFormProps) {
   return (
     <section className="login-card">
       <div>
-        <p className="eyebrow">Admin Access</p>
-        <h1>Control the knowledge base behind every answer.</h1>
+        <p className="eyebrow">Dostęp Administratora</p>
+        <h1>Zarządzaj bazą wiedzy stojącą za każdą odpowiedzią.</h1>
         <p className="muted">
-          Upload files, watch ingestion jobs, reindex documents, and verify what the bot can cite.
+          Przesyłaj pliki, śledź zadania przetwarzania, uruchamiaj ponowne indeksowanie i sprawdzaj, co bot potrafi zacytować.
         </p>
       </div>
       <form className="login-form" onSubmit={handleSubmit}>
         <label>
-          <span>Email</span>
+          <span>E-mail</span>
           <input
             autoComplete="username"
             disabled={disabled}
@@ -36,7 +36,7 @@ export function LoginForm({ disabled, error, onSubmit }: LoginFormProps) {
           />
         </label>
         <label>
-          <span>Password</span>
+          <span>Hasło</span>
           <input
             autoComplete="current-password"
             disabled={disabled}
@@ -47,7 +47,7 @@ export function LoginForm({ disabled, error, onSubmit }: LoginFormProps) {
         </label>
         {error ? <p className="form-error">{error}</p> : null}
         <button disabled={disabled} type="submit">
-          {disabled ? "Signing in..." : "Sign in"}
+          {disabled ? "Logowanie..." : "Zaloguj się"}
         </button>
       </form>
     </section>
